@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Preferences</h2>
+
+<form action="/settings" method="post">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != "hidden" %}
+        {% if field.type == "SubmitField" %}
+            {{ field }} <br>
+        {% elif field.type == "BooleanField" %}
+            {{ field.label }} {{ field }}
+            <br>
+        {% else %}
+            {{ field.label }} {{ field }}<br>
+        {% endif %}
+    {% endfor %}
+</form>
+
+<a href={{ url_for("directions") }}>Home</a>
+
+
+</body>
+</html>

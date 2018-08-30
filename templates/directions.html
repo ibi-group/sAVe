@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Directions!</h2>
+
+{# Any changes made to the trip are currently visible as a comment in the HTML. #}
+<!-- {% if subsz %}
+    <h2><span style="color:red">
+        {% for sub in subsz %}
+            {% if (subsz|length != loop.index)  %}
+                {{sub}},
+            {% else %}
+                {{sub}}
+            {% endif %}
+        {% endfor %}
+    </span>
+    </h2>
+{% endif %} -->
+{% for item in obj["trips"] %}
+    <h1> Trip {{loop.index}}</h1>
+    <ul>
+        <li>Distance:{{(item["statistics"]["distance_km"])|round(2)}} Kilometers</li>
+        <li>Duration:{{(item["statistics"]["duration_s"]//60)}} Minutes
+        {% if "transit_desert" in subsz %}
+            + Rideshare time
+        {% endif %}
+        </li>
+
+        <li>Start Time:{{item["statistics"]["start_time"]}}</li>
+        <li>End Time:{{item["statistics"]["end_time"]}}</li>
+        <ul>
+            {% for leg in item["legs"] %}
+                {% if "pickup_bike" in leg %}
+                    <li>Pickup a {{leg["bike_system_id"]}} bike from station {{leg["station_start"]["id"]}}</li>
+                {% elif "return_bike" in leg %}
+                    <li>Drop off the {{leg["bike_system_id"]}} bike at station {{leg["station_end"]["id"]}}</li>
+                {% elif "walk" == leg["mode"] %}
+                    <li>Walk for {{leg["statistics"]["distance_km"]|round(2)}}km</li>
+                {% elif "metro" == leg["mode"] %}
+                    <li>Take the {{leg["transit_route"]}} train from {{leg["station_start"]["name"]}} to {{leg["station_end"]["name"]}}.
+                        {% if "real_time" in leg %}
+                            <b><span style="color:green">It is arriving in {{ (leg["real_time"][:3]|string)[1:-1] }} minutes.</span></b></li>
+                        {% endif %}
+                {% elif "rideshare" == leg["mode"] %}
+                    {% if "end" in leg %}
+                        <li>Take a rideshare from {{leg["end"]}} to your destination.
+                            It should be waiting <b><span style="color:green">in {{leg["start_time"]}} minutes</span></b>.</li>
+                    {% elif "start" in leg %}
+                        <li>Take a rideshare to {{leg["start"]}} from your origin.</li>
+                    {% else %}
+                        <li>Take a rideshare from your origin to your destination.</li>
+                    {% endif %}
+                {% endif %}
+
+            {% endfor %}
+
+        </ul>
+                <form action={{ url_for('trip') }} method="post">
+                    <button name="trip_number" value={{ item["id"] }}>Take this trip!</button>
+                </form>
+
+    </ul>
+
+{% endfor %}
+{# [{'geometry': '', 'mode': 'walk', 'statistics': {'distance_km': 0.246378,
+'duration_s': 132, 'end_time': '2018-07-24T09:48:29.000-04:00',
+'start_time': '2018-07-24T09:46:17.000-04:00'}}, {'geometry': '', 'mode': 'metro',
+'station_end': {'id': '247S', 'name': 'Flatbush Av - Brooklyn College'}, 'station_start':
+{'id': '419S', 'name': 'Wall St'}, 'statistics': {'distance_km': 11.08136441876865, 'duration_s': 1650,
+'end_time': '2018-07-24T10:18:00.000-04:00', 'start_time': '2018-07-24T09:50:30.000-04:00'}, 'transit_route': '5'},
+{'geometry': '', 'mode': 'walk', 'statistics': {'distance_km': 3.5834590000000017, 'duration_s': 1879,
+'end_time': '2018-07-24T10:51:20.000-04:00', 'start_time': '2018-07-24T10:20:01.000-04:00'}}] #}
+
+</body>
+</html>

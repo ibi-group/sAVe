@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Business Preferences</h2>
+<form action="/businesspreferences" method="post">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != "hidden" %}
+        {% if field.type == "SubmitField" %}
+            {{ field }} 
+        {% else %}
+            {{ field.label }} {{ field }}<br>
+        {% endif %}
+    {% endfor %}
+    <br>
+
+</form>
+
+</body>
+</html>

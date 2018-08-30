@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
+</head>
+<body>
+
+<h1>Business Statistics</h1>
+<h2> Total: </h2>
+{% for key, value in totals.items() %}
+    <b> {{ key }}: </b> {{value}}
+{% endfor %}
+<form action="/businessdata" method="post">
+    {{ form.map_all }}
+</form>
+
+
+<h2> Filter Statistics: </h2>
+
+<form action="/businessdata" method="post">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != "hidden" %}
+        {% if field.type == "RadioField" %}
+            {% for item in field %}
+               {{ item }} {{ item.label }} <br>
+            {% endfor %}
+        {% elif field.type == "MultiCheckboxField" %}
+            {{ field.label }} <br>
+            {% for item in field %}
+                {{ item }} {{ item.label }} <br>
+            {% endfor %}
+        {% elif field.name == "submit" %}
+            {{ field }} <br>
+        {% elif field.type == "BooleanField" %}
+            {{ field.label }} {{ field }}
+            <br>
+        {% elif "map" not in field.name %}
+            {{ field.label }} {{ field }}<br>
+        {% endif %}
+    {% endfor %}
+</form>
+
+<h2> Total for Filtered Statistics:</h2>
+{% for key, value in filtered_totals.items() %}
+    <b> {{ key }}: </b> {{value}}
+{% endfor %}
+<div id="map"></div>
+{# Here's where the data is passed to the map. Note businessmap='True',
+    so markers instead of circles. #}
+<script id="mapjs" businessmap="True" data='{{ locations|tojson|string }}' src="{{ url_for('static', filename='js/map.js') }}" type="text/javascript"></script>
+
+<br><br>
+
+<a href={{ url_for("directions") }}>Home</a>
+
+</body>
+</html>

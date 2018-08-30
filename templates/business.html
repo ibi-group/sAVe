@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Business Login/Register</h2>
+<a href={{ url_for("login") }}>Not a Business?</a>
+<form action="/business" method="post">
+    {{ form.csrf_token }}
+    {% for field in form %}
+        {% if field.type=="SubmitField" %}
+            {{ field }} <br>
+        {% elif field.type != "CSRFTokenField" %}
+            {{ field.label }}<br>
+            {{ field }}<br>
+        {% endif %}
+    {% endfor %}
+</form>
+
+</body>
+</html>
